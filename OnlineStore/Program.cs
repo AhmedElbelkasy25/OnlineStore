@@ -1,4 +1,6 @@
 
+
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 namespace OnlineStore
@@ -12,6 +14,15 @@ namespace OnlineStore
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            //add dbContext 
+
+            builder.Services.AddDbContext<ApplicationDbContext>(option =>
+            {
+                option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
