@@ -1,4 +1,6 @@
 
+using Scalar.AspNetCore;
+
 namespace OnlineStore
 {
     public class Program
@@ -19,6 +21,7 @@ namespace OnlineStore
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();
