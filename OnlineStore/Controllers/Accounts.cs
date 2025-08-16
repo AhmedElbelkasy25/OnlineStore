@@ -27,5 +27,15 @@ namespace OnlineStore.Controllers
             }
             return BadRequest(new {message = msg , errors = Err});
         }
+        [HttpPost("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+        {
+            var (succes,msg,err) = await _accountService.ConfirmEmail(userId, token);
+            if (succes)
+            {
+                return Ok(new { message = msg });
+            }
+            return BadRequest(new { message = msg, errors = err });
+        }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.DTOs.Request
+namespace Models.DTOs.Request
 {
     public class RegisterReqDTO
     {

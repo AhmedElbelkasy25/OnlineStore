@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+     
 
 
 namespace BusinessLayer.Services
@@ -67,6 +68,25 @@ namespace BusinessLayer.Services
 
                 return (false, "Registration failed", result.Errors.Select(e=>e.Description).ToList());
             }
+        }
+
+        public async Task<(bool,string,List<string>)> ConfirmEmail(string userId, string token)
+        {
+            var appUser = await _userManager.FindByIdAsync(userId);
+            if (appUser is not null)
+            {
+                var result = await _userManager.ConfirmEmailAsync(appUser, token);
+                if (result.Succeeded)
+                {
+                    return (true, "your Email has been confirmed successfully", []);
+                }
+                else
+                {
+                    return (false, "sorry...your Email has not confirmed ",
+                        result.Errors.Select(e => e.Description).ToList());
+                }
+            }
+            return (false, "sorry...your Account dosn't Exist", []);
         }
     }
 }

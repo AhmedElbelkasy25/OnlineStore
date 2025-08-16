@@ -1,14 +1,13 @@
 
 
 
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Models;
-using OnlineStore.Repository;
-using OnlineStore.Repository.IRepository;
+using OnlineStore.Utility.DBInitilizer;
 using Scalar.AspNetCore;
-using Utilities;
+
 
 namespace OnlineStore
 {
@@ -52,6 +51,7 @@ namespace OnlineStore
             builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IDBInitilizer, DBInitilizer>();
             //add the Services
             builder.Services.AddScoped<IAccountService, AccountService>();
 
@@ -69,6 +69,13 @@ namespace OnlineStore
 
             app.UseAuthorization();
 
+            // Db Intializer
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDBInitilizer>();
+                dbInitializer.Initilize();
+            }
 
             app.MapControllers();
 
