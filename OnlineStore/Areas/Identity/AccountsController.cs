@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using System.Threading.Tasks;
@@ -45,17 +46,18 @@ namespace OnlineStore.Areas.Identity
             {
                 return Ok(new {token = msg});
             }
-            return BadRequest(msg);
+            return BadRequest(new { message = msg });
         }
+
         [HttpPost("Forget Password")]
         public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDTO forgetpassword)
         {
            var (success , msg)= await _accountService.ForgetPassword(forgetpassword);
             if (success)
             {
-                return Ok(msg );
+                return Ok(new { message = msg });
             }
-            return BadRequest(msg);
+            return BadRequest(new { message = msg });
         }
         [HttpPost("Reset Password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDTO resetPasswordDTO)
@@ -63,9 +65,18 @@ namespace OnlineStore.Areas.Identity
             var (success, msg) = await _accountService.ResetPassword(resetPasswordDTO);
             if (success)
             {
-                return Ok(msg);
+                return Ok(new { message = msg });
             }
-            return BadRequest(msg);
+            return BadRequest(new { message = msg });
+        }
+        [Authorize]
+        [HttpPost("Change Password")]
+        public async Task<IActionResult> ChangePassword(ChangePAsswordDTO changePAsswordDTO)
+        {
+            var (success , msg) = await _accountService.ChangePassword(User, changePAsswordDTO);
+            if(success)
+                return Ok(new {message = msg});
+            return BadRequest(new {message = msg});
         }
     }
 }

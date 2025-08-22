@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -171,6 +172,26 @@ namespace BusinessLayer.Services
                 return (false, $"Failed to reset password: {errors}");
             }
             return (false, "your account dosn't exist");
+        }
+
+        public async Task<(bool, string)> ChangePassword( ClaimsPrincipal claimsPrincipal , ChangePAsswordDTO changePAsswordDTO)
+        {
+            var userId = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier); // to get the user Id from JWT token
+            if (userId == null)
+            {
+                return (false, "you must login First");
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+            {
+                return (false, " your account dosn't exist");
+            }
+            var result = await _userManager.ChangePasswordAsync(user, changePAsswordDTO.OldPass, changePAsswordDTO.NewPassword);
+            if (result.Succeeded)
+            {
+                return (true, "the password has been changed successfully");
+            }
+            return (false, string.Join("," , result.Errors.Select(e=>e.Description)));
         }
     }
 }
