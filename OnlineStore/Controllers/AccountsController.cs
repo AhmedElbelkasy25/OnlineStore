@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using System.Threading.Tasks;
 
-namespace OnlineStore.Areas.Identity
+namespace OnlineStore.Controllers
 {
-    [Route("api/[area]/[controller]")]
-    [Area("identity")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AccountsController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -17,7 +13,7 @@ namespace OnlineStore.Areas.Identity
         {
             _accountService = accountService;
         }
-        
+
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterReqDTO reg)
         {
@@ -44,7 +40,7 @@ namespace OnlineStore.Areas.Identity
             var (success, msg) = await _accountService.Login(log);
             if (success)
             {
-                return Ok(new {token = msg});
+                return Ok(new { token = msg });
             }
             return BadRequest(new { message = msg });
         }
@@ -52,7 +48,7 @@ namespace OnlineStore.Areas.Identity
         [HttpPost("Forget Password")]
         public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDTO forgetpassword)
         {
-           var (success , msg)= await _accountService.ForgetPassword(forgetpassword);
+            var (success, msg) = await _accountService.ForgetPassword(forgetpassword);
             if (success)
             {
                 return Ok(new { message = msg });
@@ -73,10 +69,10 @@ namespace OnlineStore.Areas.Identity
         [HttpPost("Change Password")]
         public async Task<IActionResult> ChangePassword(ChangePAsswordDTO changePAsswordDTO)
         {
-            var (success , msg) = await _accountService.ChangePassword(User, changePAsswordDTO);
-            if(success)
-                return Ok(new {message = msg});
-            return BadRequest(new {message = msg});
+            var (success, msg) = await _accountService.ChangePassword(User, changePAsswordDTO);
+            if (success)
+                return Ok(new { message = msg });
+            return BadRequest(new { message = msg });
         }
     }
 }

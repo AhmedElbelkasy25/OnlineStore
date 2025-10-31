@@ -1,4 +1,4 @@
-
+﻿
 
 
 
@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OnlineStore.Utility.DBInitilizer;
-using Scalar.AspNetCore;
 using System.Text;
 
 
@@ -53,7 +52,7 @@ namespace OnlineStore
                     ValidAudience = builder.Configuration["JWT:Audience"],
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"]??""))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"] ?? ""))
                 }
             );
 
@@ -61,8 +60,9 @@ namespace OnlineStore
 
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-            
+            //builder.Services.AddOpenApi();
+            builder.Services.AddSwaggerGen();
+
 
             //add the services (Repos)
 
@@ -78,6 +78,7 @@ namespace OnlineStore
             builder.Services.AddScoped<IDBInitilizer, DBInitilizer>();
             //add the Services
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
             var app = builder.Build();
@@ -85,8 +86,12 @@ namespace OnlineStore
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
-                app.MapScalarApiReference();
+                //app.MapOpenApi();
+                //app.MapScalarApiReference();
+                app.UseSwagger();
+                app.UseSwaggerUI();
+
+
             }
 
             app.UseHttpsRedirection();
