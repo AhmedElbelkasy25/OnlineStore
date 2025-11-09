@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace OnlineStore.Repository.IRepository
 {
@@ -13,10 +14,12 @@ namespace OnlineStore.Repository.IRepository
         Task<bool> DeleteAsync(T entity);
 
         Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>>? expression = null,
-            Expression<Func<T, object>>[]? includes = null, bool tracked = true);
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, bool tracked = true
+            , int? skip = null, int? take = null ,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
 
         T? GetOne(Expression<Func<T, bool>>? expression = null,
-            Expression<Func<T, object>>[]? includes = null, bool tracked = true);
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, bool tracked = true);
 
         Task<bool> CommitAsync();
     }

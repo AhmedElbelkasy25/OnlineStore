@@ -2,12 +2,12 @@
 
 
 
+using BusinessLayer.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using OnlineStore.Utility.DBInitilizer;
 using System.Text;
 
 
@@ -57,7 +57,10 @@ namespace OnlineStore
             );
 
 
-
+            // image File Configuration
+            builder.Services.Configure<FileSettings>(
+                    builder.Configuration.GetSection("FileSettings")
+                );
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             //builder.Services.AddOpenApi();
@@ -66,6 +69,7 @@ namespace OnlineStore
 
             //add the services (Repos)
 
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IBrandRepository, BrandRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -79,6 +83,8 @@ namespace OnlineStore
             //add the Services
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IBrandService, BrandService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
 
 
             var app = builder.Build();

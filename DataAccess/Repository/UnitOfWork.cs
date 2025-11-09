@@ -12,8 +12,10 @@ namespace DataAccess.Repository
     {
         public UnitOfWork(IBrandRepository brandRepository, ICartRepository cartRepository,
             ICategoryRepository categoryRepository, IOrderItemRepository orderItemRepository,
-            IOrderRepository orderRepository, IRoleRepository roleRepository, IUserRepository userRepository)
+            IOrderRepository orderRepository, IRoleRepository roleRepository,
+            IProductRepository productRepository , IUserRepository userRepository)
         {
+            ProductRepository = productRepository;
             BrandRepository = brandRepository;
             CartRepository = cartRepository;
             CategoryRepository = categoryRepository;
@@ -23,6 +25,7 @@ namespace DataAccess.Repository
             UserRepository = userRepository;
         }
 
+        public IProductRepository ProductRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
 
         public ICartRepository CartRepository { get; private set; }

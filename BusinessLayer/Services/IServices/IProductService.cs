@@ -1,0 +1,16 @@
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BusinessLayer.Services.IServices
+{
+    public interface IProductService
+    {
+        Task<(bool, List<Product>?, string?)> GetAllAsync(int? page = 1, int? items = 20);
+        Task<(bool, Product?, string?)> CreateAsync(Product? prd, IFormFile img);
+        Task<(bool, Product?, string?)> UpdateAsync(Product prd, IFormFile? img);
+    }
+}

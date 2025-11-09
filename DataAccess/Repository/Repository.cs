@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace OnlineStore.Repository
 {
@@ -75,7 +77,9 @@ namespace OnlineStore.Repository
         }
 
         public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>>? expression = null,
-            Expression<Func<T, object>>[]? includes = null, bool tracked = true)
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, bool tracked = true
+            , int? skip = null,int? take = null ,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
         {
             IQueryable<T> entities = _dbSet;
 
@@ -84,26 +88,31 @@ namespace OnlineStore.Repository
                 entities = entities.Where(expression);
             }
 
-            if (includes is not null)
+            if (include is not null)
             {
-                foreach (var item in includes)
-                {
-                    entities = entities.Include(item);
-                }
-            }
+                
+                entities = include(entities);
 
+            }
+            if (orderBy is not null)
+            {
+                entities = orderBy(entities);
+            }
             if (!tracked)
             {
                 entities = entities.AsNoTracking();
             }
-
-            return (await entities.ToListAsync());
+            if (skip is not null && take is not null)
+            {
+                entities = entities.Skip(skip.Value).Take(take.Value);
+            }
+                return (await entities.ToListAsync());
         }
 
         public T? GetOne(Expression<Func<T, bool>>? expression = null,
-            Expression<Func<T, object>>[]? includes = null, bool tracked = true)
+           Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, bool tracked = true)
         {
-            return GetAsync(expression, includes, tracked).GetAwaiter().GetResult().FirstOrDefault();
+            return GetAsync(expression, include, tracked).GetAwaiter().GetResult().FirstOrDefault();
         }
 
         public async Task<bool> CommitAsync()

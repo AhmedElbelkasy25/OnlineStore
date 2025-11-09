@@ -8,4 +8,5 @@ global using Utilities;
 global using Models;
 global using OnlineStore.Repository;
 global using OnlineStore.Repository.IRepository;
+global using OnlineStore.Utility.DBInitilizer;
 

@@ -9,6 +9,7 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IUnitOfWork
     {
+        public IProductRepository ProductRepository { get; }
         public IBrandRepository BrandRepository { get; }
         public ICartRepository CartRepository { get; }
         public ICategoryRepository CategoryRepository {get; }

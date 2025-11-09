@@ -21,7 +21,7 @@ namespace OnlineStore.Controllers
             if (!success)
                 return BadRequest(new { msg });
 
-            // Map entities → DTOs here
+            
             var categoryDtos = categories.Select(e => e.Adapt<CategoryDTOResponse>()).ToList();
 
             return Ok(new { categories = categoryDtos });

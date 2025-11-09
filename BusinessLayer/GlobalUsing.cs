@@ -5,5 +5,6 @@ global using DataAccess.Repository.IRepository;
 global using Models.DTOs.Request;
 global using BusinessLayer.Services.IServices;
 global using Utilities;
+global using BusinessLayer.Configuration;
 
 
