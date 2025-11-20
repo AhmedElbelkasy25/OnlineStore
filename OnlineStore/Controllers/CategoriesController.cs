@@ -36,7 +36,7 @@ namespace OnlineStore.Controllers
                 return BadRequest(new { msg });
 
             var categoryDto = category.Adapt<CategoryDTOResponse>();
-            return Ok(categoryDto);
+            return Ok( new { Category =categoryDto });
         }
 
         [HttpPost("")]

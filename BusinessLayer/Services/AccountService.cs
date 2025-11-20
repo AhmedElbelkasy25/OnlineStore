@@ -1,20 +1,14 @@
-﻿using Azure.Core;
-
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
+using System.Web;
+
 
 
 
@@ -46,6 +40,7 @@ namespace BusinessLayer.Services
             {
                 Email = reg.Email,
                 UserName = reg.UserName,
+                Name = reg.Name,
                 Address = reg.Address,
                 Age = reg.Age
             };
@@ -55,8 +50,9 @@ namespace BusinessLayer.Services
             if (result.Succeeded)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
-                var frontendUrl = _config["Frontend:Host"] + "/ConfirmEmail";
-                var confirmationLink = $"{frontendUrl}?userId={applicationUser.Id}&token={Uri.EscapeDataString(token)}"; // علشان يظبط المسافات اللي جوا التوكين
+                //var frontendUrl = _config["Frontend:Host"] + "auth/ConfirmEmail";
+                var backendUrl = _config["JWT:Issuer"]+ "/api/Accounts/ConfirmEmail";
+                var confirmationLink = $"{backendUrl}?userId={applicationUser.Id}&token={Uri.EscapeDataString(token)}"; // علشان يظبط المسافات اللي جوا التوكين
 
 
                 await _emailSender.SendEmailAsync(applicationUser.Email,
@@ -146,8 +142,8 @@ namespace BusinessLayer.Services
             {
 
                 var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
-                var encodedToken = WebUtility.UrlEncode(token); // علشان يعمل encode  لل  token
-                var resetPasswordLink = $"{_config["Frontend:Host"]}/ResetPassword?userId={applicationUser.Id}&token={encodedToken}";
+                var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));  // علشان يعمل encode  لل  token
+                var resetPasswordLink = $"{_config["Frontend:Host"]}/auth/resetPassword?userId={applicationUser.Id}&token={encodedToken}";
 
                 
 
@@ -164,7 +160,7 @@ namespace BusinessLayer.Services
             var user = await _userManager.FindByIdAsync(resetPasswordDTO.UserId);
             if (user is not null)
             {
-                var token = WebUtility.UrlDecode(resetPasswordDTO.Token);
+                var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(resetPasswordDTO.Token));
                 var result = await _userManager.ResetPasswordAsync(user, token,resetPasswordDTO.Password);
                 if (result.Succeeded)
                     return (true, "Password has been reset successfully");

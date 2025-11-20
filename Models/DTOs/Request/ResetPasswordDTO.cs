@@ -11,9 +11,7 @@ namespace Models.DTOs.Request
     {
         public string UserId { get; set; } = null!;
         public string Token { get; set; } = null!;
-        [Required]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; } = null!;
+        
 
         [Required]
         [DataType(DataType.Password)]

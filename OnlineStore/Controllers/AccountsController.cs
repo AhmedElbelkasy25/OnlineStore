@@ -24,7 +24,7 @@ namespace OnlineStore.Controllers
             }
             return BadRequest(new { message = msg, errors = Err });
         }
-        [HttpPost("ConfirmEmail")]
+        [HttpGet("ConfirmEmail")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
         {
             var (succes, msg, err) = await _accountService.ConfirmEmail(userId, token);
@@ -37,7 +37,7 @@ namespace OnlineStore.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO log)
         {
-            var (success, msg) = await _accountService.Login(log);
+            var (success, msg ) = await _accountService.Login(log);
             if (success)
             {
                 return Ok(new { token = msg });

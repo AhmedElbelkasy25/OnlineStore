@@ -24,6 +24,13 @@ namespace OnlineStore
             builder.Services.AddControllers();
 
             //add dbContext 
+            builder.Services.AddCors(opt =>
+            {
+                opt.AddPolicy(name: "my allow spec.", policy =>
+                {
+                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
 
             builder.Services.AddDbContext<ApplicationDbContext>(option =>
             {
@@ -102,6 +109,8 @@ namespace OnlineStore
 
             app.UseHttpsRedirection();
 
+            // cors policy 
+            app.UseCors("my allow spec.");
             app.UseAuthorization();
 
             // Db Intializer
