@@ -12,9 +12,12 @@ namespace BusinessLayer.Services.IServices
     {
         Task<(bool, string, List<string>)> Register(RegisterReqDTO reg);
         Task<(bool, string, List<string>)> ConfirmEmail(string userId, string token);
-        Task<(bool, string)> Login(LoginDTO login);
+        Task<(bool, string , string?)> Login(LoginDTO login);
         Task<(bool, string)> ForgetPassword(ForgetPasswordDTO forgetPasswordDTO);
         Task<(bool, string)> ResetPassword(ResetPasswordDTO resetPasswordDTO);
         Task<(bool, string)> ChangePassword(ClaimsPrincipal claimsPrincipal, ChangePAsswordDTO changePAsswordDTO);
+        Task<(bool, string, string?)> RefreshToken(RefreshTokenDTO refreshTokenDTO);
+
+
     }
 }

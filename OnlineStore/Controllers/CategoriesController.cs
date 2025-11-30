@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs.Category.Response;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace OnlineStore.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriesController(ICategoryService categoryService) : ControllerBase

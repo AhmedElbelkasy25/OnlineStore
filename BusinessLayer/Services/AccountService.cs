@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BusinessLayer.Services.IServices;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
@@ -21,15 +22,18 @@ namespace BusinessLayer.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailSender _emailSender;
         private readonly IConfiguration _config;
+        private readonly ITokenService tokenService;
 
         public AccountService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            IUnitOfWork unitOfWork, IEmailSender emailSender, IConfiguration config)
+            IUnitOfWork unitOfWork, IEmailSender emailSender, IConfiguration config
+            , ITokenService tokenService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _unitOfWork = unitOfWork;
             _emailSender = emailSender;
             _config = config;
+            this.tokenService = tokenService;
         }
 
 
@@ -91,7 +95,7 @@ namespace BusinessLayer.Services
             return (false, "sorry...your Account dosn't Exist", []);
         }
 
-        public async Task<(bool, string)> Login(LoginDTO login)
+        public async Task<(bool, string, string?)> Login(LoginDTO login)
         {
             ApplicationUser? userByEmail = await _userManager.FindByEmailAsync(login.Account);
             ApplicationUser? userByName = await _userManager.FindByNameAsync(login.Account);
@@ -100,7 +104,7 @@ namespace BusinessLayer.Services
             if (appUser == null)
             {
 
-                return (false, "Your Account doesn't exist");
+                return (false, "Your Account doesn't exist" , null );
             }
 
             var result = await _userManager.CheckPasswordAsync(appUser, login.Password);
@@ -118,20 +122,14 @@ namespace BusinessLayer.Services
                     claims.Add(new Claim(ClaimTypes.Role, item));
                 }
 
-                SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SecretKey"] ?? ""));
-                SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                JwtSecurityToken token = new JwtSecurityToken(
-                    issuer: _config["JWT:Issuer"],
-                    audience: _config["JWT:Audience"],
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(30),
-                    signingCredentials: creds
-
-                );
-                return (true ,new JwtSecurityTokenHandler().WriteToken(token));
+                var token = tokenService.GenerateAccessToken(claims);
+                var refreshToken = tokenService.GenerateRefreshToken();
+                appUser.RefreshToken = refreshToken;
+                appUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(10);
+                await _unitOfWork.CommitAsync();
+                return (true ,token , refreshToken);
             }
-            return (false, "the password is incorrect");
+            return (false, "the password is incorrect" , null);
         }
         public async Task<(bool, string)> ForgetPassword(ForgetPasswordDTO forgetPasswordDTO)
         {
@@ -188,6 +186,35 @@ namespace BusinessLayer.Services
                 return (true, "the password has been changed successfully");
             }
             return (false, string.Join("," , result.Errors.Select(e=>e.Description)));
+        }
+    
+
+        public async Task<(bool, string, string?)> RefreshToken(RefreshTokenDTO refreshTokenDTO)
+        {
+            if (refreshTokenDTO is null)
+                return (false, "Invalid client request", null);
+                
+            string accessToken = refreshTokenDTO.AccessToken ?? "";
+            string refreshToken = refreshTokenDTO.RefreshToken ?? "";
+            var principal = tokenService.GetPrincipalFromExpiredToken(accessToken);
+            if (principal is null)
+            {
+                return (false, "Invalid client request", null);
+            }
+            var username = principal.Identity?.Name;
+            if (username == null)
+            {
+                return (false, "Invalid client Details", null);
+            }
+            var user = await _userManager.FindByNameAsync(username);
+            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+                return (false, "Invalid client request", null);
+            var newAccessToken = tokenService.GenerateAccessToken(principal.Claims);
+            var newRefreshToken = tokenService.GenerateRefreshToken();
+            user.RefreshToken = newRefreshToken;
+            await _unitOfWork.CommitAsync();
+            return (true, newAccessToken, newRefreshToken);
+            
         }
     }
 }

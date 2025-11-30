@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace OnlineStore.Controllers
 {
@@ -8,10 +9,12 @@ namespace OnlineStore.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly ITokenService _tokenService;
 
-        public AccountsController(IAccountService accountService)
+        public AccountsController(IAccountService accountService , ITokenService tokenService)
         {
             _accountService = accountService;
+            _tokenService = tokenService;
         }
 
         [HttpPost("Register")]
@@ -37,10 +40,10 @@ namespace OnlineStore.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO log)
         {
-            var (success, msg ) = await _accountService.Login(log);
+            var (success, msg, refreshToken) = await _accountService.Login(log);
             if (success)
             {
-                return Ok(new { token = msg });
+                return Ok(new { token = msg, refreshToken = refreshToken });
             }
             return BadRequest(new { message = msg });
         }
@@ -72,6 +75,18 @@ namespace OnlineStore.Controllers
             var (success, msg) = await _accountService.ChangePassword(User, changePAsswordDTO);
             if (success)
                 return Ok(new { message = msg });
+            return BadRequest(new { message = msg });
+        }
+
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenDTO refreshTokenDTO)
+        {
+            var (success, msg, refreshToken) = await _accountService.RefreshToken(refreshTokenDTO);
+
+            if (success)
+            {
+                return Ok(new { token = msg , refreshToken = refreshToken });
+            }
             return BadRequest(new { message = msg });
         }
     }

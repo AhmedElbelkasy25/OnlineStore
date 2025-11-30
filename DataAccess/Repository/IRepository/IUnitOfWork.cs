@@ -7,16 +7,17 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
-        public IProductRepository ProductRepository { get; }
-        public IBrandRepository BrandRepository { get; }
-        public ICartRepository CartRepository { get; }
-        public ICategoryRepository CategoryRepository {get; }
-        public IOrderItemRepository OrderItemRepository {get; }
-        public IOrderRepository OrderRepository { get; }
-        public IRoleRepository RoleRepository { get; }
-        public IUserRepository UserRepository {get; }
+        IProductRepository ProductRepository { get; }
+        IBrandRepository BrandRepository { get; }
+        ICartRepository CartRepository { get; }
+        ICategoryRepository CategoryRepository {get; }
+        IOrderItemRepository OrderItemRepository {get; }
+        IOrderRepository OrderRepository { get; }
+        IRoleRepository RoleRepository { get; }
+        IUserRepository UserRepository {get; }
+        Task CommitAsync();
             
 
     }

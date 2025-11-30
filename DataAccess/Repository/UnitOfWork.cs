@@ -10,10 +10,13 @@ namespace DataAccess.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
+        private readonly ApplicationDbContext _context;
+
         public UnitOfWork(IBrandRepository brandRepository, ICartRepository cartRepository,
             ICategoryRepository categoryRepository, IOrderItemRepository orderItemRepository,
             IOrderRepository orderRepository, IRoleRepository roleRepository,
-            IProductRepository productRepository , IUserRepository userRepository)
+            IProductRepository productRepository , IUserRepository userRepository,
+            ApplicationDbContext context)
         {
             ProductRepository = productRepository;
             BrandRepository = brandRepository;
@@ -23,6 +26,7 @@ namespace DataAccess.Repository
             OrderRepository = orderRepository;
             RoleRepository = roleRepository;
             UserRepository = userRepository;
+            _context = context;
         }
 
         public IProductRepository ProductRepository { get; private set; }
@@ -39,5 +43,15 @@ namespace DataAccess.Repository
         public IRoleRepository RoleRepository { get; private set; }
 
         public IUserRepository UserRepository { get; private set; }
+
+        public async Task CommitAsync()
+        {
+           await _context.SaveChangesAsync();
+        }
+
+        public void Dispose()
+        {
+           _context.Dispose();
+        }
     }
 }
