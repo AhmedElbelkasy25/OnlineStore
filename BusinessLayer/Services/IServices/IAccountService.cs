@@ -17,6 +17,7 @@ namespace BusinessLayer.Services.IServices
         Task<(bool, string)> ResetPassword(ResetPasswordDTO resetPasswordDTO);
         Task<(bool, string)> ChangePassword(ClaimsPrincipal claimsPrincipal, ChangePAsswordDTO changePAsswordDTO);
         Task<(bool, string, string?)> RefreshToken(RefreshTokenDTO refreshTokenDTO);
+        Task<(bool, string, ExternalLoginResultDTO?)> ExternalLogin(ExternalLoginDTO loginDto);
 
 
     }

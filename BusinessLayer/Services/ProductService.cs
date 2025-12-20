@@ -32,6 +32,16 @@ namespace BusinessLayer.Services
 
         }
 
+        public (bool, Product?, string?) GetProductByIdAsync(int id)
+        {
+            var product = _unitOfWork.ProductRepository.GetOne( e=>e.Id==id , include:e=>e.Include(e=>e.Brand).Include(e=>e.Category) );
+            if (product == null)
+            {
+                return (false, null, "Not Found");
+            }
+            return (true, product, null);
+        }
+
 
         private async Task<(bool success, string? fileName, string? message)> SaveImageAsync(IFormFile image)
         {
@@ -171,6 +181,25 @@ namespace BusinessLayer.Services
             }
             return (false, prd, "Product didn't updated");
         }
+
+        public async Task<(bool success, string msg)> DeleteProductAsync(int id)
+        {
+            var product = _unitOfWork.ProductRepository.GetOne(e => e.Id == id);
+            if (product == null)
+            {
+                return (false,"Not Found");
+            }
+            var img = product.MainImg;
+            var deleted = await _unitOfWork.ProductRepository.DeleteAsync(product);
+
+            if (!deleted)
+            {
+                return (false, "Sorry... Can't Delete this Product");
+            }
+            DeleteImage(img);
+            return (true, "the Product has been deleted successfully");
+        }
+
     }
 }
 

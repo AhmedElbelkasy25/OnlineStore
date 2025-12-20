@@ -12,5 +12,7 @@ namespace BusinessLayer.Services.IServices
         Task<(bool, List<Product>?, string?)> GetAllAsync(int? page = 1, int? items = 20);
         Task<(bool, Product?, string?)> CreateAsync(Product? prd, IFormFile img);
         Task<(bool, Product?, string?)> UpdateAsync(Product prd, IFormFile? img);
+        (bool, Product?, string?) GetProductByIdAsync(int id);
+        Task<(bool success, string msg)> DeleteProductAsync(int id);
     }
 }

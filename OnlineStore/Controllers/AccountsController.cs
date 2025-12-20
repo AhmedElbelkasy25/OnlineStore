@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OnlineStore.Controllers
@@ -11,7 +13,7 @@ namespace OnlineStore.Controllers
         private readonly IAccountService _accountService;
         private readonly ITokenService _tokenService;
 
-        public AccountsController(IAccountService accountService , ITokenService tokenService)
+        public AccountsController(IAccountService accountService, ITokenService tokenService)
         {
             _accountService = accountService;
             _tokenService = tokenService;
@@ -85,9 +87,29 @@ namespace OnlineStore.Controllers
 
             if (success)
             {
-                return Ok(new { token = msg , refreshToken = refreshToken });
+                return Ok(new { token = msg, refreshToken = refreshToken });
             }
             return BadRequest(new { message = msg });
+        }
+        [HttpPost("ExternalLogin")]
+        public async Task<IActionResult> ExternalLogin([FromBody] ExternalLoginDTO loginDto)
+        {
+            var (success, msg, result) = await _accountService.ExternalLogin(loginDto);
+            if (success)
+            {
+
+                return Ok(new
+                {
+                    token = result!.Token,
+                    refreshToken = result.RefreshToken,
+                    email = result.Email,
+                    userName = result.UserName
+                });
+
+
+            }
+            return BadRequest(new { msg = msg });
+
         }
     }
 }

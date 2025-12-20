@@ -1,11 +1,13 @@
 ﻿using BusinessLayer.Services;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs.Brand;
 
 
 namespace OnlineStore.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BrandsController (IBrandService brandService) : ControllerBase
@@ -23,7 +25,7 @@ namespace OnlineStore.Controllers
 
             var brandDtos = brandes.Select(e => e.Adapt<BrandDTOResponse>()).ToList();
 
-            return Ok(new { brandes = brandDtos });
+            return Ok(new { brands = brandDtos });
         }
 
         [HttpGet("{id}")]
@@ -32,10 +34,10 @@ namespace OnlineStore.Controllers
             var (success, brand, msg) = _brandService.GetBrandById(id);
 
             if (!success || brand is null)
-                return BadRequest(new { msg });
+                return BadRequest(new { msg = msg });
 
             var brandDto = brand.Adapt<BrandDTOResponse>();
-            return Ok(brandDto);
+            return Ok(new { brand = brandDto });
         }
 
         [HttpPost("")]

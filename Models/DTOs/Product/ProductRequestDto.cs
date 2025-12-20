@@ -18,7 +18,7 @@ namespace Models.DTOs.Product
         public string? Description { get; set; }
         //public string MainImg { get; set; } = string.Empty;
         [Required]
-        public IFormFile Image { get; set; }
+        public IFormFile Image { get; set; } 
         [Required]
         public double Price { get; set; }
         [Required]
@@ -43,8 +43,8 @@ namespace Models.DTOs.Product
         public int Traffic { get; set; }
         public int Rate { get; set; }
         public double Discount { get; set; }
-        public int CategoryId { get; set; }
-        public int BrandId { get; set; }
+        public string Category { get; set; }=string.Empty;
+        public string Brand { get; set; } = string.Empty;
         public bool Status { get; set; }
     }
 

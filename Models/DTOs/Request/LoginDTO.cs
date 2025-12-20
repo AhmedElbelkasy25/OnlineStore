@@ -11,10 +11,10 @@ namespace Models.DTOs.Request
     {
         [Required]
         [Display(Name = "UserName Or Email")]
-        public string Account { get; set; }
+        public string Account { get; set; } = string.Empty;
         [Required]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
-        public bool RememberMe { get; set; }
+        public string Password { get; set; } = string.Empty;
+        public bool RememberMe { get; set; } 
     }
 }

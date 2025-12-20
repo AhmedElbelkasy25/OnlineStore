@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Models.DTOs.Category.Response;
 using Models.DTOs.Product;
 using System.Threading.Tasks;
 
@@ -33,6 +34,22 @@ namespace OnlineStore.Controllers
             }
 
         }
+        
+        [HttpGet("{id}")]
+        public  IActionResult GetProductByIdAsync([FromRoute] int id)
+        {
+            var (success, product, msg) = productService.GetProductByIdAsync(id);
+
+            if (!success || product is null)
+                return BadRequest(new { msg });
+
+            var productDto = product.Adapt<ProductResponseDto>();
+            productDto.Category = product.Category.Name;
+            productDto.Brand = product.Brand.Name;
+            return Ok(new { Product = productDto });
+        }
+        
+        
         [HttpPost()]
         public async Task<IActionResult> CreateAsync([FromForm] ProductRequestDto prdDto)
         {
@@ -54,6 +71,17 @@ namespace OnlineStore.Controllers
                 return Ok(new { msg = msg });
             }
             return BadRequest(new { msg = msg });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute] int id)
+        {
+            var (success , msg) = await productService.DeleteProductAsync(id);
+            if (success)
+            {
+                return Ok(new {msg =msg});
+            }
+            return BadRequest(new {msg = msg});
         }
 
     }

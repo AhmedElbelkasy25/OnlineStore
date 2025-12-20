@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -44,6 +46,12 @@ namespace OnlineStore
                 options.SignIn.RequireConfirmedEmail = false;
             }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
+            // add HtppClient
+
+            builder.Services.AddHttpClient();
+
+
+
             // add Authentication
             builder.Services.AddAuthentication(options =>
             {
@@ -62,6 +70,25 @@ namespace OnlineStore
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"] ?? ""))
                 }
             );
+            // external login 
+            // add Google Authentication
+            builder.Services.AddAuthentication()
+            .AddGoogle("google", opt =>
+            {
+                var googleAuth = builder.Configuration.GetSection("Authentication:Google");
+                opt.ClientId = googleAuth["ClientId"] ?? "";
+                opt.ClientSecret = googleAuth["ClientSecret"]?? "";
+                opt.SignInScheme = IdentityConstants.ExternalScheme;
+            });
+            // add facebook Authentication
+            builder.Services.AddAuthentication()
+            .AddFacebook("Facebook", opt =>
+            {
+                var googleAuth = builder.Configuration.GetSection("Authentication:Facebook");
+                opt.AppId = googleAuth["AppId"] ?? "";
+                opt.AppSecret = googleAuth["AppSecret"] ?? "";
+                opt.SignInScheme = IdentityConstants.ExternalScheme;
+            });
 
 
             // image File Configuration
@@ -113,6 +140,15 @@ namespace OnlineStore
             // cors policy 
             app.UseCors("my allow spec.");
             app.UseAuthorization();
+
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(builder.Environment.ContentRootPath, "..", "images")
+                ),
+                            RequestPath = "/images"
+            });
 
             // Db Intializer
 
