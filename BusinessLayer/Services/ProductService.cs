@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Models.DTOs.Product;
 using System.Threading.Tasks;
 
 
@@ -14,10 +15,12 @@ namespace BusinessLayer.Services
         private readonly IWebHostEnvironment env = env;
         private readonly IOptions<FileSettings> fileSettings = fileSettings;
 
-        public async Task<(bool, List<Product>?, string?)> GetAllAsync(int? page = 1, int? items = 20)
+        public async Task<(bool, List<Product>?, ProductPaginationDto?, string?)> GetAllAsync(int? page = 1, int? items = 20)
         {
             if (page < 1) page = 1;
             if (items < 1 || items > 100) items = 20;
+
+            var totalItems = await _unitOfWork.ProductRepository.CountAsync();
 
             var skip = (page - 1) * items;
             var take = items;
@@ -25,10 +28,12 @@ namespace BusinessLayer.Services
 
             if (!products.Any())
             {
-                return (true, null, "there is no Product");
+                return (true, null, null ,"there is no Product");
             }
-
-            return (true, products.ToList(), null);
+            var dto = new ProductPaginationDto() { CurrentPage = page ?? 1, PageSize = items ?? 20,
+                TotalItems = totalItems  , TotalPages = (int)Math.Ceiling(totalItems / (double)items)
+            };
+            return (true, products.ToList(), dto,null);
 
         }
 

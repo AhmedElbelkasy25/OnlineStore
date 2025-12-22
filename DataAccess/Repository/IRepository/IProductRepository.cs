@@ -10,5 +10,6 @@ namespace DataAccess.Repository.IRepository
     public interface IProductRepository : IRepository<Product>
     {
         Task AddRangeAsync(List<Product> products);
+        Task<int> CountAsync();
     }
 }

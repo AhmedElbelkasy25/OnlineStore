@@ -13,15 +13,16 @@ namespace OnlineStore.Controllers
     {
         private readonly IProductService productService = productService;
         [HttpGet()]
-        public async Task<IActionResult> GetAllasync( [FromQuery] int? page, [FromQuery] int? items)
+        public async Task<IActionResult> GetAllasync( [FromQuery] int? page=1, [FromQuery] int? items =1)
         {
-            var (success, prds, msg) = await productService.GetAllAsync(page, items);
+            var (success, prds, pagination , msg) = await productService.GetAllAsync(page, items);
             if (success)
             {
                 if (prds != null)
                 {
                     var newprds = prds.Adapt<List<ProductResponseDto>>();
-                    return Ok(new {Products = newprds });
+                    pagination.Products = newprds;
+                    return Ok(new {AllProducts = pagination });
                 }
                 else
                 {

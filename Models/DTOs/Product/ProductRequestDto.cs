@@ -43,7 +43,9 @@ namespace Models.DTOs.Product
         public int Traffic { get; set; }
         public int Rate { get; set; }
         public double Discount { get; set; }
-        public string Category { get; set; }=string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public int CategoryId { get; set; }
+        public int BrandId { get; set; }
         public string Brand { get; set; } = string.Empty;
         public bool Status { get; set; }
     }
