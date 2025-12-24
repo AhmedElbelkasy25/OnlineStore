@@ -31,7 +31,7 @@ namespace BusinessLayer.Services
                 return (true, null, null ,"there is no Product");
             }
             var dto = new ProductPaginationDto() { CurrentPage = page ?? 1, PageSize = items ?? 20,
-                TotalItems = totalItems  , TotalPages = (int)Math.Ceiling(totalItems / (double)items)
+                TotalItems = totalItems  , TotalPages = (int)Math.Ceiling(totalItems / (double)items!)
             };
             return (true, products.ToList(), dto,null);
 

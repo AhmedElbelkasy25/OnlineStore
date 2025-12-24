@@ -44,6 +44,7 @@ namespace OnlineStore
             {
                 options.Password.RequiredUniqueChars = 0;
                 options.SignIn.RequireConfirmedEmail = false;
+                options.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
             // add HtppClient
@@ -120,6 +121,8 @@ namespace OnlineStore
             builder.Services.AddScoped<IBrandService, BrandService>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddTransient<ITokenService, TokenService>();
+            builder.Services.AddTransient<IUserService, UserService>();
+
 
 
             var app = builder.Build();
@@ -148,6 +151,14 @@ namespace OnlineStore
                     Path.Combine(builder.Environment.ContentRootPath, "..", "images")
                 ),
                             RequestPath = "/images"
+            });
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                Path.Combine(builder.Environment.ContentRootPath, "..", "images", "Profiles")
+                ),
+                        RequestPath = "/images/profiles"
             });
 
             // Db Intializer

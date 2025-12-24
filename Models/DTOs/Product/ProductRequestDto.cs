@@ -16,7 +16,7 @@ namespace Models.DTOs.Product
         public string Name { get; set; } = string.Empty;
         [Required]
         public string? Description { get; set; }
-        //public string MainImg { get; set; } = string.Empty;
+
         [Required]
         public IFormFile Image { get; set; } 
         [Required]

@@ -9,5 +9,6 @@ namespace BusinessLayer.Configuration
     public class FileSettings
     {
         public string ImagesFolder { get; set; } = "images";
+        public string ProfileImagesFolder { get; set; } = "profilePics";
     }
 }

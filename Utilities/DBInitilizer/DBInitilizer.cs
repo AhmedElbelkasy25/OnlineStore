@@ -45,7 +45,7 @@ namespace OnlineStore.Utility.DBInitilizer
                 }, "Admin123$").GetAwaiter().GetResult();
 
                 var user = _userManager.FindByEmailAsync("Admin@eraasoft.com").GetAwaiter().GetResult();
-                _userManager.AddToRoleAsync(user, SD.SuperAdmin).GetAwaiter().GetResult();
+                _userManager.AddToRoleAsync(user!, SD.SuperAdmin).GetAwaiter().GetResult();
             } 
             catch(Exception ex)
             {
